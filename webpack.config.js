@@ -53,5 +53,10 @@ module.exports = {
       }
     ]
   },
-  plugins
+  plugins,
+  devServer: {
+    historyApiFallback: true,
+    host: '0.0.0.0',
+    compress: true
+  }
 }

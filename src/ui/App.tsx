@@ -1,8 +1,18 @@
 import React from 'react';
+import {Switch, Route} from 'react-router-dom';
+import Client from './Client';
+import Host from './Host';
 
-const App = ({}) => {
+const App = () => {
   return (
-    <h1>Livechat</h1>
+    <Switch>
+      <Route path="/client" exact>
+        <Client />
+      </Route>
+      <Route path="/host" exact>
+        <Host />
+      </Route>
+    </Switch>
   )
 }
 
