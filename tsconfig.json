@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "strict": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "esnext",
+    "jsx": "react",
+    "lib": [
+      "dom",
+      "esnext",
+    ],
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "moduleResolution": "node"
+  }
+}
+  

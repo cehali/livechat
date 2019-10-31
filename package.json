@@ -3,23 +3,26 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start:dev": "webpack-dev-server --mode development --progress",
-    "prebuild": "rm -rf ./dist"
+    "start": "webpack-dev-server --mode development",
+    "start:dev": "ts-node src/scripts/dev-start.ts"
   },
   "dependencies": {
-    "@types/mocha": "^5.2.7",
     "mocha": "^6.2.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.1",
     "@types/chai": "^4.2.4",
     "@types/enzyme": "^3.10.3",
+    "@types/mocha": "^5.2.7",
     "@types/react": "^16.9.1",
     "@types/react-dom": "^16.9.3",
     "@types/react-router-dom": "^5.1.0",
+    "@types/ws": "^6.0.3",
     "chai": "^4.2.0",
+    "cross-spawn": "^7.0.1",
     "enzyme": "^3.10.0",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.8.0",
@@ -30,6 +33,7 @@
     "typescript": "3.4.3",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.9.0",
+    "ws": "^7.2.0"
   }
 }
