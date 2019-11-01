@@ -1,11 +1,15 @@
 import React, {useState, useMemo} from 'react';
+import {useLocation} from 'react-router';
 import {Message} from 'src/types/Message';
+import Chat from './commons/Chat';
 
 const Client = () => {
-  const [messageText, setMessageText] = useState('');
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
 
-  const connection = useMemo(() => new WebSocket('ws://localhost:9090'), []);
+  const location = useLocation();
+  const clientName = location.state && location.state.clientName
+
+  const connection = useMemo(() => new WebSocket(`ws://localhost:9090/?uuid=${clientName}`), []);
 
   connection.onerror = (error: Event) => {
     console.error(error);
@@ -14,31 +18,21 @@ const Client = () => {
     onReceiveMessage(event.data)
   };
   
-  const onSendMessage = (messageText: string) => {
-    connection.send(JSON.stringify({from: 'test', to: 'host', messageText}));
-    setCurrentMessages([...currentMessages, {from: 'test', to: 'host', messageText}]);
+  const onSendMessage = (messageText: string, receiverName: string) => {
+    connection.send(JSON.stringify({from: clientName, to: receiverName.toLowerCase(), messageText}));
+    setCurrentMessages([...currentMessages, {from: clientName, to: receiverName.toLowerCase(), messageText}]);
   }
 
   const onReceiveMessage = (messageData: string) => {
     setCurrentMessages([...currentMessages, JSON.parse(messageData)]);
   }
-
+  
   return (
-    <>
-      <div id="header">
-        <p id="username">Test</p>
-      </div>
-      <div id="messages">
-        {currentMessages.map((message) => message.from === 'test' ?
-          <p className='message-right'>{message.messageText}</p>
-          : <p className='message-left'>{message.messageText}</p>
-        )}
-      </div>
-      <div id="text-box">
-        <textarea onChange={(event) => setMessageText(event.target.value)} />
-        <button onClick={() => onSendMessage(messageText)}>Send</button>
-      </div>
-    </>
+    <Chat
+      messages={currentMessages}
+      onSendMessage={onSendMessage}
+      receiverName='Host'
+    />
   )
 };
 

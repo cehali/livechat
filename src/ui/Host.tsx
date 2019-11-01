@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {Message} from 'src/types/Message';
+import Chat from './commons/Chat';
 
-const Host = ({connection}: {connection: WebSocket}) => {
-  const [messageText, setMessageText] = useState('');
+const Host = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
+  const [clientsNames, setClientsNames] = useState<string[]>([]);
+
+  const connection = useMemo(() => new WebSocket('ws://localhost:9090/?uuid=host'), []);
   
   connection.onerror = (error: Event) => {
     console.error(error);
@@ -12,31 +15,32 @@ const Host = ({connection}: {connection: WebSocket}) => {
     onReceiveMessage(event.data)
   };
   
-  const onSendMessage = (messageText: string) => {
-    connection.send(JSON.stringify({from: 'host', to: 'test', messageText}));
-    setCurrentMessages([...currentMessages, {from: 'host', to: 'test', messageText}]);
+  const onSendMessage = (messageText: string, receiverName: string) => {
+    connection.send(JSON.stringify({from: 'host', to: receiverName, messageText}));
+    setCurrentMessages([...currentMessages, {from: 'host', to: receiverName, messageText}]);
   }
 
-  const onReceiveMessage = (messageData: string) => {
-    setCurrentMessages([...currentMessages, JSON.parse(messageData)]);
+  const onReceiveMessage = (dataReceived: string) => {
+    const dataDecoded = JSON.parse(dataReceived);
+    if (dataDecoded instanceof Array) {
+      setClientsNames(dataDecoded);
+    } else {
+      setCurrentMessages([...currentMessages, dataDecoded]);
+    }
   }
 
   return (
-    <>
-      <div id="header">
-        <p id="username">Test</p>
-      </div>
-      <div id="messages">
-        {currentMessages.map((message) => message.from === 'host' ?
-          <p className='message-right'>{message.messageText}</p>
-          : <p className='message-left'>{message.messageText}</p>
-        )}
-      </div>
-      <div id="text-box">
-        <textarea onChange={(event) => setMessageText(event.target.value)} />
-        <button onClick={() => onSendMessage(messageText)}>Send</button>
-      </div>
-    </>
+    <div>
+      {clientsNames.map((clientName) => {
+        return (
+          <Chat 
+            messages={currentMessages.filter(({from, to}) => (from === clientName && to === 'host') || (to === clientName && from === 'host'))}
+            onSendMessage={onSendMessage}
+            receiverName={clientName}
+          />
+        )
+      })}
+    </div>
   )
 };
 

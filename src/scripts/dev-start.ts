@@ -1,8 +1,8 @@
-import start from "../server";
+import startWebsocket from "../server";
 import spawnProcess from "../utils/spawnProcess";
 
 function startDev () {
-  start();
+  startWebsocket();
   spawnProcess('web', 'yarn', ['start'], {});
 }
 

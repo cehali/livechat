@@ -2,18 +2,19 @@ import React, {useMemo} from 'react';
 import {Switch, Route} from 'react-router-dom';
 import Client from './Client';
 import Host from './Host';
+import MainScreen from './MainScreen';
 
 const App = () => {
-
-  const connection = useMemo(() => new WebSocket('ws://localhost:9090'), []);
-
   return (
     <Switch>
+      <Route path="/" exact>
+        <MainScreen />
+      </Route>
       <Route path="/client" exact>
         <Client />
       </Route>
       <Route path="/host" exact>
-        <Host connection={connection} />
+        <Host />
       </Route>
     </Switch>
   )

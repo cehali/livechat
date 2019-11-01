@@ -13,8 +13,8 @@
     "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
-    "@types/cross-spawn": "^6.0.1",
     "@types/chai": "^4.2.4",
+    "@types/cross-spawn": "^6.0.1",
     "@types/enzyme": "^3.10.3",
     "@types/mocha": "^5.2.7",
     "@types/react": "^16.9.1",
