@@ -12,22 +12,20 @@ const startWebsocket = (server: Server) => {
 
   const sendMessageToClientRecipient = (message: string) => {
     const messageDecoded = JSON.parse(message);
-    const [clientRecipient] = clientsSockets.filter((clientSocket) => {
-      return clientSocket.clientName === messageDecoded.to;
-    });
+    const [clientRecipient] = clientsSockets.filter((clientSocket) => clientSocket.clientName === messageDecoded.to);
     clientRecipient.socket.send(message);
   };
+
+  const getClientsNames = () => clientsSockets.map(({clientName}) => clientName);
 
   server.on('connection', (ws: WebSocket, req: Request) => {
     if (req.url.replace('/?uuid=', '') === 'host') {
       hostSocket = ws;
-      const clientsNames = clientsSockets.map(({clientName}) => clientName);
-      hostSocket.send(JSON.stringify(clientsNames));
+      hostSocket.send(JSON.stringify(getClientsNames()));
     } else {
       const clientName = req.url.replace('/?uuid=', '');
       clientsSockets.push({clientName, socket: ws});
-      const clientsNames = clientsSockets.map(({clientName}) => clientName);
-      hostSocket && hostSocket.send(JSON.stringify(clientsNames));
+      hostSocket && hostSocket.send(JSON.stringify(getClientsNames()));
     }
 
     ws.on('message', (message: string) => {
@@ -42,15 +40,14 @@ const startWebsocket = (server: Server) => {
       if (req.url.replace('/?uuid=', '') !== 'host') {
         const clientName = req.url.replace('/?uuid=', '');
         clientsSockets = clientsSockets.filter((clientSocket) => clientSocket.clientName !== clientName);
-        const clientsNames = clientsSockets.map(({clientName}) => clientName);
-        hostSocket && hostSocket.send(JSON.stringify(clientsNames));
+        hostSocket && hostSocket.send(JSON.stringify(getClientsNames()));
         console.log('Connection closed');
       }
     });
   });
 };
 
-const startDevServer = async (): Promise<() => void> => {
+const startServer = async (): Promise<() => void> => {
   const app = express();
   app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
@@ -79,17 +76,17 @@ const startDevServer = async (): Promise<() => void> => {
     res.send(result);
   });
 
-  const port = process.env.API_PORT || 9090;
+  const port = process.env.PORT || 9090;
   server.listen(port, () => {
     console.log(`Server started on port ${port}`);
   });
 
-  const stopDevServer = () => {
+  const stopServer = () => {
     server.close();
     mongoClient.close();
   };
 
-  return stopDevServer;
+  return stopServer;
 };
 
-export default startDevServer;
+export default startServer;

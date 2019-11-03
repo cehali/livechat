@@ -3,17 +3,17 @@ import {useLocation, useHistory} from 'react-router';
 import axios from 'axios';
 import Chat from './commons/Chat';
 import {Message} from 'src/types/Message';
+import {config} from '../config/config';
 
 const Client = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
 
   const location = useLocation();
   const history = useHistory();
-
   const clientName = (location.state && location.state.clientName) || history.replace('/');
 
-  const apiURL = `${process.env.API_URL || 'http://localhost'}:${process.env.API_PORR || 9090}`;
-  const webSocketURL = `${process.env.WEBSOCKET_URL || 'localhost'}:${process.env.WEBSOCKET_PORT || 9090}`;
+  const apiURL = `${config.apiURL}:${config.port}`;
+  const webSocketURL = `${config.webSocketURL}:${config.port}`;
 
   useEffect(() => {
     axios.get(`${apiURL}/messages/${clientName}`)

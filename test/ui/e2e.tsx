@@ -4,14 +4,14 @@ import React from 'react';
 import {AppPage} from '../pages/AppPage';
 import App from '../../src/ui/App';
 import mountWithMemory from '../helpers/mountWithMemory';
-import startDevServer from '../../src/server';
+import startServer from '../../src/server';
 
 describe('UI: e2e', () => {
-  let stopDevServer: () => void;
+  let stopServer: () => void;
   let appPage: any;
 
   beforeEach(async () => {
-    stopDevServer = await startDevServer();
+    stopServer = await startServer();
     const appWrapper = mountWithMemory(<App/>);
     appPage = new AppPage(appWrapper);
   });
@@ -21,6 +21,6 @@ describe('UI: e2e', () => {
   });
 
   afterEach(() => {
-    stopDevServer();
+    stopServer();
   });
 });

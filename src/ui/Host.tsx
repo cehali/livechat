@@ -3,13 +3,14 @@ import axios from 'axios';
 import {Message} from 'src/types/Message';
 import Chat from './commons/Chat';
 import '../styles/host.css';
+import {config} from '../config/config';
 
 const Host = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [clientsNames, setClientsNames] = useState<string[]>([]);
 
-  const apiURL = `${process.env.API_URL || 'http://localhost'}:${process.env.API_PORT || 9090}`;
-  const webSocketURL = `${process.env.WEBSOCKET_URL || 'localhost'}:${process.env.WEBSOCKET_PORT || 9090}`;
+  const apiURL = `${config.apiURL}:${config.port}`;
+  const webSocketURL = `${config.webSocketURL}:${config.port}`;
 
   useEffect(() => {
     axios.get(`${apiURL}/messages`)
