@@ -1,28 +1,32 @@
 import WebSocket, {Server} from 'ws';
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import bodyParser from 'body-parser';
 import {ClientSocket} from './types/ClientSocket';
+import {MongoClient} from 'mongodb';
 
-const port = 9090;
-const wss = new Server({port: port});
-
-const startWebsocket = () => {
+const startWebsocket = (server: Server) => {
   let hostSocket: WebSocket;
-  let clientSockets: ClientSocket[] = [];
+  let clientsSockets: ClientSocket[] = [];
 
   const sendMessageToClientRecipient = (message: string) => {
     const messageDecoded = JSON.parse(message);
-    const [clientRecipient] = clientSockets.filter((clientSocket) => {
+    const [clientRecipient] = clientsSockets.filter((clientSocket) => {
       return clientSocket.clientName === messageDecoded.to;
     });
     clientRecipient.socket.send(message);
   }
 
-  wss.on('connection', (ws: WebSocket, req: Request) => {
+  server.on('connection', (ws: WebSocket, req: Request) => {
     if (req.url.replace('/?uuid=', '') === 'host') {
       hostSocket = ws;
+      const clientsNames = clientsSockets.map(({clientName}) => clientName);
+      hostSocket.send(JSON.stringify(clientsNames));
     } else {
       const clientName = req.url.replace('/?uuid=', '');
-      clientSockets.push({clientName, socket: ws});
-      const clientsNames = clientSockets.map(({clientName}) => clientName);
+      clientsSockets.push({clientName, socket: ws});
+      const clientsNames = clientsSockets.map(({clientName}) => clientName);
       hostSocket && hostSocket.send(JSON.stringify(clientsNames));
     }
   
@@ -35,12 +39,48 @@ const startWebsocket = () => {
     });
 
     ws.on('close', () => {
-      clientSockets = [];
-      console.log('Connection closed');
+      if (req.url.replace('/?uuid=', '') !== 'host') {
+        const clientName = req.url.replace('/?uuid=', '');
+        clientsSockets = clientsSockets.filter((clientSocket) => clientSocket.clientName !== clientName);
+        console.log('Connection closed');
+      };
     });
+  });
+};
+
+const startServer = async () => {
+  const app = express();
+  app.use(cors())
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json())
+
+  const server = http.createServer(app);
+  const wss = new Server({server});
+  startWebsocket(wss);
+  const url = 'mongodb://localhost:27017';
+  const mongoClient = await MongoClient.connect(url)
+  const mongoDb = mongoClient.db('livechat');
+
+  app.post('/messages', (req) => {
+    mongoDb.collection('messages').insertOne(req.body);
+  });
+
+  app.get('/messages/', async (_, res) => {
+    const result = await mongoDb.collection('messages').find().toArray();
+    res.send(result)
+  });
+
+  app.get('/messages/:clientName', async (req, res) => {
+    const result = await mongoDb.collection('messages').find({
+      $or:[{from: req.params.clientName}, {to: req.params.clientName}]
+    }).toArray();
+    res.send(result)
+  });
+
+  const port = process.env.PORT || 9090;
+  server.listen(port, () => {
+    console.log(`Server started on port ${port}`);
   });
 }
 
-
-
-export default startWebsocket;
+export default startServer;

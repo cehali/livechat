@@ -1,12 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 const plugins = [
-  new MiniCssExtractPlugin({
-    filename: '[name].[hash].css',
-    chunkFilename: '[id].[hash].css',
-  }),
   new HtmlWebpackPlugin({
     template: 'src/index.html'
   }),
@@ -45,9 +40,9 @@ module.exports = {
         ],
       },
       {
-        test: /\.(le|c)ss$/,
+        test: /\.css$/,
+        include: /src/,
         use: [
-          MiniCssExtractPlugin.loader,
           'css-loader'
         ]
       }

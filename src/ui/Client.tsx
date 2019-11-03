@@ -1,5 +1,6 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import {useLocation} from 'react-router';
+import axios from 'axios';
 import {Message} from 'src/types/Message';
 import Chat from './commons/Chat';
 
@@ -8,6 +9,14 @@ const Client = () => {
 
   const location = useLocation();
   const clientName = location.state && location.state.clientName
+  
+  useEffect(() => {
+    axios.get(`http://localhost:9090/messages/${clientName}`)
+      .then((result) => {
+        setCurrentMessages(result.data)
+      })
+      .catch((error) => console.error(error))
+  }, []);
 
   const connection = useMemo(() => new WebSocket(`ws://localhost:9090/?uuid=${clientName}`), []);
 
@@ -19,8 +28,10 @@ const Client = () => {
   };
   
   const onSendMessage = (messageText: string, receiverName: string) => {
-    connection.send(JSON.stringify({from: clientName, to: receiverName.toLowerCase(), messageText}));
-    setCurrentMessages([...currentMessages, {from: clientName, to: receiverName.toLowerCase(), messageText}]);
+    const messageObject = {from: clientName, to: receiverName.toLowerCase(), messageText};
+    axios.post(`http://localhost:9090/messages`, messageObject);
+    connection.send(JSON.stringify(messageObject));
+    setCurrentMessages([...currentMessages, messageObject]);
   }
 
   const onReceiveMessage = (messageData: string) => {

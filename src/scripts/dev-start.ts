@@ -1,8 +1,8 @@
-import startWebsocket from "../server";
+import startServer from "../server";
 import spawnProcess from "../utils/spawnProcess";
 
-function startDev () {
-  startWebsocket();
+const startDev = async () => {
+  await startServer();
   spawnProcess('web', 'yarn', ['start'], {});
 }
 
