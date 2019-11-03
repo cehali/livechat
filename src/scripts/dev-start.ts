@@ -1,5 +1,5 @@
-import startServer from "../server";
-import spawnProcess from "../utils/spawnProcess";
+import startServer from '../server';
+import spawnProcess from '../utils/spawnProcess';
 
 const startDev = async () => {
   await startServer();
