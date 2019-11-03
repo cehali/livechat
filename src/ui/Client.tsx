@@ -43,6 +43,7 @@ const Client = () => {
       messages={currentMessages}
       onSendMessage={onSendMessage}
       receiverName='Host'
+      clientName={clientName}
     />
   )
 };

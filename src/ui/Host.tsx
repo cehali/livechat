@@ -2,6 +2,7 @@ import React, {useState, useMemo, useEffect} from 'react';
 import axios from 'axios';
 import {Message} from 'src/types/Message';
 import Chat from './commons/Chat';
+import '../styles/host.css';
 
 const Host = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
@@ -40,19 +41,27 @@ const Host = () => {
     }
   }
 
-  return (
-    <div>
-      {clientsNames.map((clientName) => {
-        return (
-          <Chat 
-            messages={currentMessages.filter(({from, to}) => (from === clientName && to === 'host') || (to === clientName && from === 'host'))}
-            onSendMessage={onSendMessage}
-            receiverName={clientName}
-          />
-        )
-      })}
-    </div>
-  )
+  if (clientsNames.length > 0) {
+    return (
+      <div className="host-window">
+        {clientsNames.map((clientName) => {
+          return (
+            <Chat 
+              messages={currentMessages.filter(({from, to}) => 
+                (from === clientName && to === 'host') || (to === clientName && from === 'host'))}
+              onSendMessage={onSendMessage}
+              receiverName={clientName}
+            />
+          )
+        })}
+      </div>
+    )
+  } else {
+    return (
+      <p><strong>There are not any clients connected</strong></p>
+    )
+  }
+
 };
 
 export default Host;

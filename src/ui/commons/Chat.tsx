@@ -6,9 +6,10 @@ interface ChatProps {
   messages: Message[];
   onSendMessage: (messageText: string, receiverName: string) => void;
   receiverName: string;
+  clientName?: string;
 }
 
-const Chat = ({messages, onSendMessage, receiverName}: ChatProps) => {
+const Chat = ({messages, onSendMessage, receiverName, clientName}: ChatProps) => {
   const [messageText, setMessageText] = useState('');
 
   const onSend = (messageText: string, receiverName: string) => {
@@ -18,7 +19,7 @@ const Chat = ({messages, onSendMessage, receiverName}: ChatProps) => {
 
   return (
     <div className="chat-window">
-      <p id="username" className="chat-header">{receiverName}</p>
+      <p id="username" className="chat-header">{`${clientName || 'Host'} => ${receiverName}`}</p>
       <div className="messages-box">
         {messages.map((message) => message.from === receiverName.toLowerCase() ?
           <p className='message message-left'>{message.messageText}</p>

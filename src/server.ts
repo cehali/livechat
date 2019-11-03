@@ -42,6 +42,8 @@ const startWebsocket = (server: Server) => {
       if (req.url.replace('/?uuid=', '') !== 'host') {
         const clientName = req.url.replace('/?uuid=', '');
         clientsSockets = clientsSockets.filter((clientSocket) => clientSocket.clientName !== clientName);
+        const clientsNames = clientsSockets.map(({clientName}) => clientName);
+        hostSocket && hostSocket.send(JSON.stringify(clientsNames));
         console.log('Connection closed');
       };
     });
