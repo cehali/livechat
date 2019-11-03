@@ -16,7 +16,7 @@ const startWebsocket = (server: Server) => {
       return clientSocket.clientName === messageDecoded.to;
     });
     clientRecipient.socket.send(message);
-  }
+  };
 
   server.on('connection', (ws: WebSocket, req: Request) => {
     if (req.url.replace('/?uuid=', '') === 'host') {
@@ -29,7 +29,7 @@ const startWebsocket = (server: Server) => {
       const clientsNames = clientsSockets.map(({clientName}) => clientName);
       hostSocket && hostSocket.send(JSON.stringify(clientsNames));
     }
-  
+
     ws.on('message', (message: string) => {
       if (req.url.replace('/?uuid=', '') === 'host') {
         sendMessageToClientRecipient(message);
@@ -45,22 +45,22 @@ const startWebsocket = (server: Server) => {
         const clientsNames = clientsSockets.map(({clientName}) => clientName);
         hostSocket && hostSocket.send(JSON.stringify(clientsNames));
         console.log('Connection closed');
-      };
+      }
     });
   });
 };
 
 const startServer = async () => {
   const app = express();
-  app.use(cors())
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json())
+  app.use(cors());
+  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.json());
 
   const server = http.createServer(app);
   const wss = new Server({server});
   startWebsocket(wss);
   const url = 'mongodb://localhost:27017';
-  const mongoClient = await MongoClient.connect(url)
+  const mongoClient = await MongoClient.connect(url);
   const mongoDb = mongoClient.db('livechat');
 
   app.post('/messages', (req) => {
@@ -69,20 +69,20 @@ const startServer = async () => {
 
   app.get('/messages/', async (_, res) => {
     const result = await mongoDb.collection('messages').find().toArray();
-    res.send(result)
+    res.send(result);
   });
 
   app.get('/messages/:clientName', async (req, res) => {
     const result = await mongoDb.collection('messages').find({
-      $or:[{from: req.params.clientName}, {to: req.params.clientName}]
+      $or: [{from: req.params.clientName}, {to: req.params.clientName}],
     }).toArray();
-    res.send(result)
+    res.send(result);
   });
 
   const port = process.env.PORT || 9090;
   server.listen(port, () => {
     console.log(`Server started on port ${port}`);
   });
-}
+};
 
 export default startServer;

@@ -1,4 +1,4 @@
-import {spawn} from "cross-spawn";
+import {spawn} from 'cross-spawn';
 
 const spawnProcess = (name: string, command: string, args: string[], options: object) => {
   const child = spawn(command, args, options);

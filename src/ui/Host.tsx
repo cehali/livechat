@@ -9,28 +9,28 @@ const Host = () => {
   const [clientsNames, setClientsNames] = useState<string[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:9090/messages`)
+    axios.get('http://localhost:9090/messages')
       .then((result) => {
-        setCurrentMessages(result.data)
+        setCurrentMessages(result.data);
       })
-      .catch((error) => console.error(error))
+      .catch((error) => console.error(error));
   }, []);
 
   const connection = useMemo(() => new WebSocket('ws://localhost:9090/?uuid=host'), []);
-  
+
   connection.onerror = (error: Event) => {
     console.error(error);
   };
   connection.onmessage = (event: MessageEvent) => {
-    onReceiveMessage(event.data)
+    onReceiveMessage(event.data);
   };
-  
+
   const onSendMessage = (messageText: string, receiverName: string) => {
     const messageObject = {from: 'host', to: receiverName.toLowerCase(), messageText};
-    axios.post(`http://localhost:9090/messages`, messageObject);
+    axios.post('http://localhost:9090/messages', messageObject);
     connection.send(JSON.stringify(messageObject));
     setCurrentMessages([...currentMessages, messageObject]);
-  }
+  };
 
   const onReceiveMessage = (dataReceived: string) => {
     const dataDecoded = JSON.parse(dataReceived);
@@ -39,29 +39,29 @@ const Host = () => {
     } else {
       setCurrentMessages([...currentMessages, dataDecoded]);
     }
-  }
+  };
 
   if (clientsNames.length > 0) {
     return (
       <div className="host-window">
-        {clientsNames.map((clientName) => {
+        {clientsNames.map((clientName, index) => {
           return (
-            <Chat 
-              messages={currentMessages.filter(({from, to}) => 
+            <Chat
+              messages={currentMessages.filter(({from, to}) =>
                 (from === clientName && to === 'host') || (to === clientName && from === 'host'))}
               onSendMessage={onSendMessage}
               receiverName={clientName}
+              key={index}
             />
-          )
+          );
         })}
       </div>
-    )
+    );
   } else {
     return (
       <p><strong>There are not any clients connected</strong></p>
-    )
+    );
   }
-
 };
 
 export default Host;

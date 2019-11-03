@@ -6,7 +6,7 @@ import {AppPage} from 'test/pages/AppPage';
 
 describe('UI: e2e', () => {
   before(() => {
-    
+
   });
 
   it('Go to host and client page', () => {

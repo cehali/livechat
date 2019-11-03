@@ -7,5 +7,4 @@ export class AppPage {
   getPageTitle() {
     return this.wrapper.find('.title').text();
   }
-
 }

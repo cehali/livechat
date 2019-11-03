@@ -15,15 +15,15 @@ const Chat = ({messages, onSendMessage, receiverName, clientName}: ChatProps) =>
   const onSend = (messageText: string, receiverName: string) => {
     setMessageText('');
     onSendMessage(messageText, receiverName);
-  }
+  };
 
   return (
     <div className="chat-window">
       <p id="username" className="chat-header">{`${clientName || 'Host'} => ${receiverName}`}</p>
       <div className="messages-box">
-        {messages.map((message) => message.from === receiverName.toLowerCase() ?
-          <p className='message message-left'>{message.messageText}</p>
-          : <p className='message message-right'>{message.messageText}</p>
+        {messages.map((message, index) => message.from === receiverName.toLowerCase()
+          ? <p className='message message-left' key={index}>{message.messageText}</p>
+          : <p className='message message-right' key={index}>{message.messageText}</p>,
         )}
       </div>
       <div className="message-text-box">
@@ -31,7 +31,7 @@ const Chat = ({messages, onSendMessage, receiverName, clientName}: ChatProps) =>
         <button className="send-btn" onClick={() => onSend(messageText, receiverName)} disabled={!messageText}>Send</button>
       </div>
     </div>
-  )
+  );
 };
 
 export default Chat;
