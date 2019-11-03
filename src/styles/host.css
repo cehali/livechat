@@ -1,3 +1,4 @@
 .host-window {
   display: flex;
+  flex-wrap: wrap;
 }
