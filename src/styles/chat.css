@@ -60,6 +60,7 @@
   width: 20%;
   background-color: darkslateblue;
   color: white;
+  cursor: pointer;
 }
 
 .send-btn:disabled {
