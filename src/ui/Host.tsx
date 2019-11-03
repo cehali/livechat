@@ -8,15 +8,18 @@ const Host = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [clientsNames, setClientsNames] = useState<string[]>([]);
 
+  const apiURL = `${process.env.API_URL || 'http://localhost'}:${process.env.API_PORT || 9090}`;
+  const webSocketURL = `${process.env.WEBSOCKET_URL || 'localhost'}:${process.env.WEBSOCKET_PORT || 9090}`;
+
   useEffect(() => {
-    axios.get('http://localhost:9090/messages')
+    axios.get(`${apiURL}/messages`)
       .then((result) => {
         setCurrentMessages(result.data);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  const connection = useMemo(() => new WebSocket('ws://localhost:9090/?uuid=host'), []);
+  const connection = useMemo(() => new WebSocket(`ws://${webSocketURL}/?uuid=host`), []);
 
   connection.onerror = (error: Event) => {
     console.error(error);
@@ -27,7 +30,7 @@ const Host = () => {
 
   const onSendMessage = (messageText: string, receiverName: string) => {
     const messageObject = {from: 'host', to: receiverName.toLowerCase(), messageText};
-    axios.post('http://localhost:9090/messages', messageObject);
+    axios.post(`${apiURL}/messages`, messageObject);
     connection.send(JSON.stringify(messageObject));
     setCurrentMessages([...currentMessages, messageObject]);
   };

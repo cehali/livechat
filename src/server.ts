@@ -50,7 +50,7 @@ const startWebsocket = (server: Server) => {
   });
 };
 
-const startServer = async () => {
+const startDevServer = async () => {
   const app = express();
   app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
@@ -59,7 +59,7 @@ const startServer = async () => {
   const server = http.createServer(app);
   const wss = new Server({server});
   startWebsocket(wss);
-  const url = 'mongodb://localhost:27017';
+  const url = `mongodb://${process.env.MONGO_URL || 'localhost:27017'}`;
   const mongoClient = await MongoClient.connect(url);
   const mongoDb = mongoClient.db('livechat');
 
@@ -79,10 +79,10 @@ const startServer = async () => {
     res.send(result);
   });
 
-  const port = process.env.PORT || 9090;
+  const port = process.env.API_PORT || 9090;
   server.listen(port, () => {
     console.log(`Server started on port ${port}`);
   });
 };
 
-export default startServer;
+export default startDevServer;

@@ -1,8 +1,8 @@
-import startServer from '../server';
+import startDevServer from '../server';
 import spawnProcess from '../utils/spawnProcess';
 
 const startDev = async () => {
-  await startServer();
+  await startDevServer();
   spawnProcess('web', 'yarn', ['start'], {});
 };
 

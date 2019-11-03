@@ -27,7 +27,7 @@ const Chat = ({messages, onSendMessage, receiverName, clientName}: ChatProps) =>
         )}
       </div>
       <div className="message-text-box">
-        <textarea className="message-text" onChange={(event) => setMessageText(event.target.value)} />
+        <textarea className="message-text" onChange={(event) => setMessageText(event.target.value)} value={messageText}/>
         <button className="send-btn" onClick={() => onSend(messageText, receiverName)} disabled={!messageText}>Send</button>
       </div>
     </div>

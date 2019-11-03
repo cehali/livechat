@@ -1,5 +1,5 @@
 import React, {useState, useMemo, useEffect} from 'react';
-import {useLocation} from 'react-router';
+import {useLocation, useHistory} from 'react-router';
 import axios from 'axios';
 import {Message} from 'src/types/Message';
 import Chat from './commons/Chat';
@@ -8,17 +8,22 @@ const Client = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
 
   const location = useLocation();
-  const clientName = location.state && location.state.clientName;
+  const history = useHistory();
+
+  const clientName = location.state && location.state.clientName || history.replace('/');
+
+  const apiURL = `${process.env.API_URL || 'http://localhost'}:${process.env.API_PORR || 9090}`;
+  const webSocketURL = `${process.env.WEBSOCKET_URL || 'localhost'}:${process.env.WEBSOCKET_PORT || 9090}`;
 
   useEffect(() => {
-    axios.get(`http://localhost:9090/messages/${clientName}`)
+    axios.get(`${apiURL}/messages/${clientName}`)
       .then((result) => {
         setCurrentMessages(result.data);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  const connection = useMemo(() => new WebSocket(`ws://localhost:9090/?uuid=${clientName}`), []);
+  const connection = useMemo(() => new WebSocket(`ws://${webSocketURL}/?uuid=${clientName}`), []);
 
   connection.onerror = (error: Event) => {
     console.error(error);
@@ -29,7 +34,7 @@ const Client = () => {
 
   const onSendMessage = (messageText: string, receiverName: string) => {
     const messageObject = {from: clientName, to: receiverName.toLowerCase(), messageText};
-    axios.post('http://localhost:9090/messages', messageObject);
+    axios.post(`${apiURL}/messages`, messageObject);
     connection.send(JSON.stringify(messageObject));
     setCurrentMessages([...currentMessages, messageObject]);
   };
