@@ -4,11 +4,11 @@
     "strict": true,
     "esModuleInterop": true,
     "module": "commonjs",
-    "target": "esnext",
+    "target": "es5",
     "jsx": "react",
     "lib": [
       "dom",
-      "esnext",
+      "es5",
     ],
     "baseUrl": ".",
     "skipLibCheck": true,

@@ -50,7 +50,7 @@ const startWebsocket = (server: Server) => {
   });
 };
 
-const startDevServer = async () => {
+const startDevServer = async (): Promise<() => void> => {
   const app = express();
   app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
@@ -60,7 +60,7 @@ const startDevServer = async () => {
   const wss = new Server({server});
   startWebsocket(wss);
   const url = `mongodb://${process.env.MONGO_URL || 'localhost:27017'}`;
-  const mongoClient = await MongoClient.connect(url);
+  const mongoClient = await MongoClient.connect(url, {useUnifiedTopology: true});
   const mongoDb = mongoClient.db('livechat');
 
   app.post('/messages', (req) => {
@@ -83,6 +83,13 @@ const startDevServer = async () => {
   server.listen(port, () => {
     console.log(`Server started on port ${port}`);
   });
+
+  const stopDevServer = () => {
+    server.close();
+    mongoClient.close();
+  };
+
+  return stopDevServer;
 };
 
 export default startDevServer;

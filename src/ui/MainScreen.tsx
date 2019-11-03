@@ -9,8 +9,8 @@ const MainScreen = () => {
   return (
     <div className="main-screen">
       <input className="main-screen-input" placeholder="Select your client username" onChange={(event) => setClientName(event.target.value)} />
-      <button className="main-screen-btn" onClick={() => history.push('/client', {clientName})}>Client</button>
-      <button className="main-screen-btn" onClick={() => history.push('/host')}>Host</button>
+      <button id="clientBtn" className="main-screen-btn" onClick={() => history.push('/client', {clientName})}>Client</button>
+      <button id="hostBtn" className="main-screen-btn" onClick={() => history.push('/host')}>Host</button>
     </div>
   );
 };

@@ -62,7 +62,7 @@ const Host = () => {
     );
   } else {
     return (
-      <p><strong>There are not any clients connected</strong></p>
+      <p id="noClientsText"><strong>There are not any clients connected</strong></p>
     );
   }
 };
